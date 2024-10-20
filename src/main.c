@@ -1,8 +1,10 @@
+#include "greeting.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(void) {
+  const char *const greeting = get_greeting();
+  printf("%s\n", greeting);
 
-  printf("Hello, word!\n");
-
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -48,7 +48,9 @@ DEPS:=$(OBJECTS:.o=.d)
 
 BINMAIN:=$(call FIXPATH,$(BIN)/$(MAIN))
 
-all: clean $(SOURCES) $(BIN) $(MAIN)
+all: build run
+
+build: $(SOURCES) $(BIN) $(MAIN)
 
 $(BIN):
 	$(MD) $(BIN)
@@ -66,12 +68,12 @@ $(MAIN): $(OBJECTS)
 $(OUT)/%.o: $(SRC)/%.c
 	$(CFORMAT) $(CFORMAT_FLAGS) $<
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -MMD $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c -MMD $< -o $@
 
 .PHONY: clean
 clean:
 	$(RD) $(BIN)
 	$(RD) $(OUT)
 
-run: all
+run:
 	$(call FIXPATH,./$(BINMAIN))
