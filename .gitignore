@@ -1,6 +1,7 @@
 .DS_Store
 .idea/
 
+.cache/
 out/
 bin/
 compile_commands.json
