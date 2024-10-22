@@ -16,24 +16,19 @@ OUT:=out
 BIN:=bin
 
 ifeq ($(OS),Windows_NT)
+	SHELL=C:/Program Files/Git/bin/bash.exe
 	MAIN:=main.exe
-	SOURCEDIRS:=$(SRC)
-	INCLUDEDIRS:=$(INCLUDE)
-	LIBDIRS:=$(LIB)
-	FIXPATH=$(subst /,\,$1)
-	RM:=del /q /f
-	RD:=rd /q /s /f
-	MD:=mkdir
 else
 	MAIN:=main
-	SOURCEDIRS:=$(shell find $(SRC) -type d)
-	INCLUDEDIRS:=$(shell find $(INCLUDE) -type d)
-	LIBDIRS:=$(shell find $(LIB) -type d)
-	FIXPATH=$1
-	RM=rm -f
-	RD=rm -rf
-	MD:=mkdir -p
 endif
+
+SOURCEDIRS:=$(shell find $(SRC) -type d)
+INCLUDEDIRS:=$(shell find $(INCLUDE) -type d)
+LIBDIRS:=$(shell find $(LIB) -type d)
+FIXPATH=$1
+RM=rm -f
+RD=rm -rf
+MD:=mkdir -p
 
 # C sources
 SOURCES:=$(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
