@@ -48,7 +48,11 @@ DEPS:=$(OBJECTS:.o=.d)
 
 BINMAIN:=$(call FIXPATH,$(BIN)/$(MAIN))
 
-all: build run
+all: build-cc run
+
+.PHONY: build-cc
+build-cc: clean
+	bear -- make build
 
 build: $(SOURCES) $(BIN) $(MAIN)
 
@@ -57,7 +61,6 @@ $(BIN):
 
 $(MAIN): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $(BINMAIN) $(OBJECTS)
-
 
 # include all .d files
 -include $(DEPS)
