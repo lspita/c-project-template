@@ -43,10 +43,10 @@ DEPS:=$(OBJECTS:.o=.d)
 
 BINMAIN:=$(call FIXPATH,$(BIN)/$(MAIN))
 
-all: build-cc run
+all: build run
 
-.PHONY: build-cc
-build-cc: clean
+.PHONY: init
+init: clean
 	bear -- make build
 
 build: $(SOURCES) $(BIN) $(MAIN)
