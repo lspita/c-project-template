@@ -72,6 +72,7 @@ $(OUT)/%.o: $(SRC)/%.c
 
 .PHONY: clean
 clean:
+	$(RD) .cache
 	$(RD) $(BIN)
 	$(RD) $(OUT)
 
