@@ -70,6 +70,7 @@ $(OUT)/%.o: $(SRC)/%.c
 
 .PHONY: clean
 clean:
+	$(RM) compile_commands.json
 	$(RD) .cache
 	$(RD) $(BIN)
 	$(RD) $(OUT)
