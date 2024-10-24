@@ -1,3 +1,3 @@
 #include "greeting.h"
 
-const char *get_greeting(void) { return "Hello world!"; }
+const char *greeting_get(void) { return "Hello world!"; }

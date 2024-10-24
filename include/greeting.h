@@ -1,6 +1,6 @@
 #ifndef GREETING_H
 #define GREETING_H
 
-const char *get_greeting(void);
+const char *greeting_get(void);
 
 #endif /* GREETING_H */
