@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS:=-Wall -Wextra -Wpedantic -std=c89 -lm
+CFLAGS:=-Wall -Wextra -Wpedantic -std=c17
 
 CFORMAT:=clang-format
 CFORMAT_FLAGS:=-i
