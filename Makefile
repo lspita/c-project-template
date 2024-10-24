@@ -22,9 +22,10 @@ else
 	MAIN:=main
 endif
 
-SOURCEDIRS:=$(shell find $(SRC) -type d)
-INCLUDEDIRS:=$(shell find $(INCLUDE) -type d)
-LIBDIRS:=$(shell find $(LIB) -type d)
+# 2>/dev/null: This redirects the standard error output (file descriptor 2) to /dev/null, silencing any error messages
+SOURCEDIRS:=$(shell find $(SRC) -type d 2>/dev/null)
+INCLUDEDIRS:=$(shell find $(INCLUDE) -type d 2>/dev/null)
+LIBDIRS:=$(shell find $(LIB) -type d 2>/dev/null)
 FIXPATH=$1
 RM=rm -f
 RD=rm -rf
