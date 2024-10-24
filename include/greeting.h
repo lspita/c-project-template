@@ -1,5 +1,5 @@
-#ifndef GREETING_H
-#define GREETING_H
+#ifndef __INCLUDE_GREETING_H__
+#define __INCLUDE_GREETING_H__
 
 /**
  * @brief Get default greeting
@@ -7,4 +7,4 @@
  */
 const char *greeting_get(void);
 
-#endif /* GREETING_H */
+#endif /* __INCLUDE_GREETING_H__ */
