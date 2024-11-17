@@ -9,7 +9,7 @@
 ## Setup
 
 ```sh
-source generate_cc.sh
+make init
 ```
 
 ## Build
