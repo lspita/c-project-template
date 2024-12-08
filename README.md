@@ -6,19 +6,21 @@
 - make
 - bear <https://github.com/rizsotto/Bear/>
 
-## Setup
+## Usage
+
+To perform a full build, run
 
 ```sh
-make init
+make # or make all
 ```
 
-## Build
+This will
+1. Clean from any build files
+2. Format the source code
+3. Compile the project
+4. Create `compile_commands.json` for clangd
 
-```sh
-make build
-```
-
-## Run
+You can then run the project with
 
 ```sh
 make run

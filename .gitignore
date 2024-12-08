@@ -1,7 +1,10 @@
+# MacOS
 .DS_Store
+
+# Intellij
 .idea/
 
+# Project
 .cache/
 out/
-bin/
 compile_commands.json

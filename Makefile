@@ -1,5 +1,5 @@
-CC=clang
-CFLAGS:=-Wall -Wextra -Wpedantic -std=c17
+CC:=clang
+CFLAGS:=-Wall -Wextra -Wpedantic -std=c99
 
 CFORMAT:=clang-format
 CFORMAT_FLAGS:=-i
@@ -7,13 +7,15 @@ CFORMAT_FLAGS:=-i
 # source dir
 SRC:=src
 # include dir
-INCLUDE:=include
+INC:=inc
 # lib dir
 LIB:=lib
-# objects dir
+# output dir
 OUT:=out
+# build files dir
+BUILD:=$(OUT)/build
 # binary dir
-BIN:=bin
+BIN:=$(OUT)/bin
 
 ifeq ($(OS),Windows_NT)
 	SHELL=C:/Program Files/Git/bin/bash.exe
@@ -23,58 +25,77 @@ else
 endif
 
 # 2>/dev/null: This redirects the standard error output (file descriptor 2) to /dev/null, silencing any error messages
-SOURCEDIRS:=$(shell find $(SRC) -type d 2>/dev/null)
-INCLUDEDIRS:=$(shell find $(INCLUDE) -type d 2>/dev/null)
-LIBDIRS:=$(shell find $(LIB) -type d 2>/dev/null)
-FIXPATH=$1
-RM=rm -f
-RD=rm -rf
-MD:=mkdir -p
+SRC_DIRS:=$(shell find $(SRC) -type d 2>/dev/null)
+INC_DIRS:=$(shell find $(INC) -type d 2>/dev/null)
+LIB_DIRS:=$(shell find $(LIB) -type d 2>/dev/null)
 
 # C sources
-SOURCES:=$(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
+SRC_FILES:=$(wildcard $(patsubst %,%/*.c, $(SRC_DIRS)))
 # include dirs
-INCLUDES:=$(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
+INC_FLAGS:=$(patsubst %,-I%, $(INC_DIRS:%/=%))
 # C libs
-LIBS:=$(patsubst %,-L%, $(LIBDIRS:%/=%))
+LIB_FLAGS:=$(patsubst %,-L%, $(LIB_DIRS:%/=%))
 # C object files 
-OBJECTS:=$(SOURCES:$(SRC)/%.c=$(OUT)/%.o)
+OBJ_FILES:=$(SRC_FILES:$(SRC)/%.c=$(BUILD)/%.o)
 # Makefile dependency files
-DEPS:=$(OBJECTS:.o=.d)
+DEP_FILES:=$(OBJ_FILES:%.o=%.d)
 
-BINMAIN:=$(call FIXPATH,$(BIN)/$(MAIN))
+BINMAIN:=$(BIN)/$(MAIN)
 
-all: build run
-
-.PHONY: init
-init: clean
-	bear -- make build
-
-build: $(SOURCES) $(BIN) $(MAIN)
-
-$(BIN):
-	$(MD) $(BIN)
-
-$(MAIN): $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $(BINMAIN) $(OBJECTS)
-
-# include all .d files
--include $(DEPS)
-
-# $<: prerequisite of the rule(a .c file)
-# $@: target of the rule(a .o file)
-# -MMD: generates dependency output files same name as the .o file
-$(OUT)/%.o: $(SRC)/%.c
-	$(CFORMAT) $(CFORMAT_FLAGS) $<
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c -MMD $< -o $@
+all: init run
 
 .PHONY: clean
-clean:
-	$(RM) compile_commands.json
-	$(RD) .cache
-	$(RD) $(BIN)
-	$(RD) $(OUT)
+init:
+	bear -- make clean build
 
-run:
-	$(call FIXPATH,./$(BINMAIN))
+build: $(SRC_FILES) $(OUT) $(MAIN)
+
+$(OUT):
+	mkdir -p $(BUILD)
+	mkdir -p $(BIN)
+
+$(MAIN): $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(INC_FLAGS) $(LIB_FLAGS) -o $(BINMAIN) $(OBJ_FILES)
+
+# include all .d files
+-include $(DEP_FILES)
+
+# $<: prerequisite of the rule (a .c file)
+# $@: target of the rule (a .o file)
+# -MMD: generates dependency output files same name as the .o file
+$(BUILD)/%.o: $(SRC)/%.c
+	$(CFORMAT) $(CFORMAT_FLAGS) $<
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INC_FLAGS) -c -MMD $< -o $@
+
+run: build
+	./$(BINMAIN)
+
+.PHONY: clean vars
+clean:
+	rm -f compile_commands.json
+	rm -rf .cache/
+	rm -rf $(OUT)
+
+vars:
+	@echo CC=$(CC)
+	@echo CFLAGS=$(CFLAGS)
+	@echo CFORMAT=$(CFORMAT)
+	@echo CFORMAT_FLAGS=$(CFORMAT_FLAGS)
+	@echo SRC=$(SRC)
+	@echo INC=$(INC)
+	@echo LIB=$(LIB)
+	@echo OUT=$(OUT)
+	@echo BUILD=$(BUILD)
+	@echo BIN=$(BIN)
+	@echo SHELL=$(SHELL)
+	@echo MAIN=$(MAIN)
+	@echo SRC_DIRS=$(SRC_DIRS)
+	@echo INC_DIRS=$(INC_DIRS)
+	@echo LIB_DIRS=$(LIB_DIRS)
+	@echo SRC_FILES=$(SRC_FILES)
+	@echo INC_FLAGS=$(INC_FLAGS)
+	@echo LIB_FLAGS=$(LIB_FLAGS)
+	@echo OBJ_FILES=$(OBJ_FILES)
+	@echo DEP_FILES=$(DEP_FILES)
+	@echo BINMAIN=$(BINMAIN)
