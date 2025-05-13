@@ -76,5 +76,90 @@
                 "default"
             ]
         }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "verbose": true,
+            "inheritConfigureEnvironment": true
+        },
+        {
+            "name": "clang-debug",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "clang-debug"
+        },
+        {
+            "name": "clang-release",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "clang-release"
+        },
+        {
+            "name": "gcc-debug",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "gcc-debug"
+        },
+        {
+            "name": "gcc-release",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "gcc-release"
+        },
+        {
+            "name": "ci-workflow",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "ci-workflow"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "inheritConfigureEnvironment": true
+        },
+        {
+            "name": "clang-debug",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "clang-debug"
+        },
+        {
+            "name": "clang-release",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "clang-release"
+        },
+        {
+            "name": "gcc-debug",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "gcc-debug"
+        },
+        {
+            "name": "gcc-release",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "gcc-release"
+        },
+        {
+            "name": "ci-workflow",
+            "inherits": [
+                "default"
+            ],
+            "configurePreset": "ci-workflow"
+        }
     ]
 }
