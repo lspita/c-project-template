@@ -124,7 +124,10 @@
         {
             "name": "default",
             "hidden": true,
-            "inheritConfigureEnvironment": true
+            "inheritConfigureEnvironment": true,
+            "output": {
+                "outputOnFailure": true
+            }
         },
         {
             "name": "clang-debug",
