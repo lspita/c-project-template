@@ -1,0 +1,84 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/bin/${presetName}",
+            "installDir": "${sourceDir}/build/install/${presetName}"
+        },
+        {
+            "name": "clang",
+            "hidden": true,
+            "inherits": [
+                "default"
+            ],
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        },
+        {
+            "name": "clang-debug",
+            "inherits": [
+                "clang"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "clang-release",
+            "inherits": [
+                "clang"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "execution": {
+                "interactiveDebugging": true
+            },
+            "inheritConfigureEnvironment": true
+        },
+        {
+            "name": "clang-debug",
+            "configurePreset": "clang-debug",
+            "inherits": [
+                "default"
+            ]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "verbose": true,
+            "inheritConfigureEnvironment": true
+        },
+        {
+            "name": "clang-debug",
+            "configurePreset": "clang-debug",
+            "inherits": [
+                "default"
+            ]
+        },
+        {
+            "name": "clang-release",
+            "configurePreset": "clang-release",
+            "inherits": [
+                "default"
+            ]
+        }
+    ]
+}

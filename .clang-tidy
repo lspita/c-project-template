@@ -1,0 +1,11 @@
+Checks: >
+  -*,
+  clang-analyzer-*,
+  cert-*,
+  bugprone-*,
+  concurrency-*,
+  misc-*,
+  portability-*,
+  openmp-*,
+  readability-*,
+FormatStyle: file
