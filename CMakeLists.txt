@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-include(config.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/variables.cmake)
 
 # create project
 project(
@@ -30,7 +30,7 @@ list(REMOVE_ITEM SOURCES ${MAIN_SOURCE})
 
 # create lib
 add_library(${LIB_NAME} STATIC ${SOURCES})
-target_link_libraries(${LIB_NAME} PUBLIC ${EXTRA_LIBRARIES})
+include(${CMAKE_SOURCE_DIR}/cmake/libraries.cmake)
 target_include_directories(${LIB_NAME}
     PUBLIC
         ${INCLUDE_DIR}
