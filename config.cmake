@@ -1,8 +1,8 @@
 # project
-set(PROJECT_NAME doot)
+set(PROJECT_NAME c-project-template)
 set(PROJECT_VERSION 0.1.0)
-set(PROJECT_DESCRIPTION "doot programming language")
-set(PROJECT_HOMEPAGE_URL https://github.com/lspita/doot)
+set(PROJECT_DESCRIPTION "C project template")
+set(PROJECT_HOMEPAGE_URL https://github.com/lspita/c-project-template)
 
 # language
 set(LANGUAGE C)
