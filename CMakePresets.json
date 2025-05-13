@@ -24,6 +24,17 @@
             }
         },
         {
+            "name": "gcc",
+            "hidden": true,
+            "inherits": [
+                "default"
+            ],
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
             "name": "clang-debug",
             "inherits": [
                 "clang"
@@ -40,42 +51,27 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
-        }
-    ],
-    "testPresets": [
-        {
-            "name": "default",
-            "hidden": true,
-            "execution": {
-                "interactiveDebugging": true
-            },
-            "inheritConfigureEnvironment": true
         },
         {
-            "name": "clang-debug",
-            "configurePreset": "clang-debug",
+            "name": "gcc-debug",
             "inherits": [
-                "default"
-            ]
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "default",
-            "hidden": true,
-            "verbose": true,
-            "inheritConfigureEnvironment": true
+                "gcc"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
         },
         {
-            "name": "clang-debug",
-            "configurePreset": "clang-debug",
+            "name": "gcc-release",
             "inherits": [
-                "default"
-            ]
+                "gcc"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         },
         {
-            "name": "clang-release",
-            "configurePreset": "clang-release",
+            "name": "ci-workflow",
             "inherits": [
                 "default"
             ]

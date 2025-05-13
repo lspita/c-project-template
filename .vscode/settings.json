@@ -4,7 +4,6 @@
         "name": "CMake LLDB Debug"
     },
     "cmake.configureOnEdit": true,
-    "cmake.configureOnOpen": true,
     "yaml.schemas": {
         "https://json.schemastore.org/clang-tidy.json": [
             ".clang-tidy",
