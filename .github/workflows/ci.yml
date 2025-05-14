@@ -8,9 +8,21 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Format files
+        id: format
+        run: >
+          find . -name '*.c' -o -name '*.h' -o -name '*.cpp' -o -name '*.hpp' \
+          -exec clang-format --dry-run --Werror {} +
+
+  build:
+    needs: format
+    runs-on: ${{ matrix.os }}
     strategy:
       # matrix to run every build type on:
       # 1. Windows with MSVC compiler
@@ -58,6 +70,10 @@ jobs:
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Tidy
+        run: >
+          run-clang-tidy -p build/bin/${{ matrix.cmake_preset }}
 
       - name: Build
         run: >

@@ -9,8 +9,8 @@
         {
             "name": "default",
             "hidden": true,
-            "binaryDir": "${sourceDir}/build/bin/${presetName}",
-            "installDir": "${sourceDir}/build/install/${presetName}"
+            "binaryDir": "build/bin/${presetName}",
+            "installDir": "build/install/${presetName}"
         },
         {
             "name": "clang",
