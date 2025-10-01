@@ -10,7 +10,9 @@ project(
     LANGUAGES ${LANGUAGE}
 )
 # generate compile_commands.json
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+# explicit includes needed for nix
+set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES})
 
 # set names
 set(EXE_NAME ${PROJECT_NAME})

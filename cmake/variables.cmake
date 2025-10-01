@@ -15,4 +15,3 @@ set(MAIN_FILE main.c) # main source of the executable
 set(INCLUDE_DIR include) # public headers location
 set(TEST_DIR test) # tests dir
 set(TEST_EXECUTABLES *.test.c) # test sources treated as executables
-set(EXTRA_LIBRARIES m) # libraries to link

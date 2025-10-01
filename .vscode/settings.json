@@ -1,6 +1,5 @@
 {
     "cmake.debugConfig": {
-        "type": "lldb",
         "name": "CMake LLDB Debug"
     },
     "cmake.configureOnEdit": true,
