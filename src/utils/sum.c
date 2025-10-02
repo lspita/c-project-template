@@ -1,4 +1,4 @@
-#include "utils/sum.h"
+#include "sum.h"
 
 #include <stdint.h>
 

@@ -12,7 +12,7 @@ project(
 # generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # explicit includes needed for nix
-set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES})
+set(CMAKE_${LANGUAGE}_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_${LANGUAGE}_IMPLICIT_INCLUDE_DIRECTORIES})
 
 # set names
 set(EXE_NAME ${PROJECT_NAME})
@@ -25,9 +25,22 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/${SRC_DIR})
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR})
 set(TEST_DIR ${CMAKE_SOURCE_DIR}/${TEST_DIR})
 
+# set file extension
+if("${LANGUAGE}" STREQUAL "C")
+    set(_default_source_ext c)
+elseif("${LANGUAGE}" STREQUAL "CXX")
+    set(_default_source_ext cpp)
+else()
+    message(FATAL_ERROR "Unsupported language: ${LANGUAGE}")
+endif()
+
+if(NOT DEFINED SOURCE_EXT)
+    set(SOURCE_EXT "${_default_source_ext}")
+endif()
+
 # split sources into main executable and lib files
 set(MAIN_SOURCE ${SRC_DIR}/${MAIN_FILE})
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${SRC_DIR}/*.c)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${SRC_DIR}/*.${SOURCE_EXT})
 list(REMOVE_ITEM SOURCES ${MAIN_SOURCE})
 
 # create lib
@@ -49,7 +62,7 @@ include(CTest)
 enable_testing()
 
 # create test library
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${TEST_DIR}/*.c)
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${TEST_DIR}/*.${SOURCE_EXT})
 file(GLOB_RECURSE TESTS CONFIGURE_DEPENDS ${TEST_DIR}/${TEST_EXECUTABLES})
 list(REMOVE_ITEM TEST_SOURCES ${TESTS})
 
