@@ -1,11 +1,12 @@
 {
-    "cmake.debugConfig": {
-        "name": "CMake LLDB Debug"
-    },
+    "cmake.revealLog": "error",
     "cmake.configureOnEdit": true,
+    "cmake.deleteBuildDirOnCleanConfigure": true,
     "yaml.schemas": {
         "https://json.schemastore.org/clang-tidy.json": [
-            ".clang-tidy",
+            ".clang-tidy"
         ]
     },
+    "cmake.ctest.testSuiteDelimiter": "/",
+    "cmake.ctest.debugLaunchTarget": "CTest LLDB Debug"
 }

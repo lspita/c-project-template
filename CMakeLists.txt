@@ -1,97 +1,182 @@
-cmake_minimum_required(VERSION 3.21.0)
-include(${CMAKE_SOURCE_DIR}/cmake/variables.cmake)
+cmake_minimum_required(VERSION 3.24.0)
+
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(PROJECT_LANGUAGES "C" "CXX")
+set(SOURCES_EXTENSIONS "c" "cpp" "cc" "cxx")
+set(MAIN_SOURCE_NAME main)
+set(SRC_DIR src)
+set(INCLUDE_DIR include)
+set(OVERRIDE_ROOT_MAIN true)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+include(cmake/variables.cmake)
+
+set(TEST_EXTRA_EXT "test")
+
+function(get_arg index outvar default _argn)
+    set(opts ${_argn})
+    list(LENGTH opts n)
+    if (n GREATER ${index})
+        list(GET opts ${index} val)
+    else()
+        set(val ${default})
+    endif()
+    set(${outvar} "${val}" PARENT_SCOPE)
+endfunction()
+
+set(MAIN_SOURCE_NAMES_LIST)
+foreach(ext IN LISTS SOURCES_EXTENSIONS)
+    list(APPEND MAIN_SOURCE_NAMES_LIST "${MAIN_SOURCE_NAME}.${ext}")
+endforeach()
+
+function(abs_path outvar path)
+    set(${outvar} "${CMAKE_SOURCE_DIR}/${path}" PARENT_SCOPE)
+endfunction()
+
+function(remove_regex outvar reg value)
+    string(REGEX REPLACE "${reg}" "" res "${value}")
+    set(${outvar} "${res}" PARENT_SCOPE)
+endfunction()
+
+function(src_path outvar path)
+    remove_regex(res "^${CMAKE_SOURCE_DIR}\\/?" "${path}")
+    remove_regex(res "^${SRC_SUBDIR}\\/?" "${res}")
+    set(${outvar} "${res}" PARENT_SCOPE)
+endfunction()
+
+function(check_exists path)
+    if (NOT EXISTS "${path}")
+        message(FATAL_ERROR "Path ${path} does not exist")
+    endif()
+endfunction()
+
+function(check_isdir path)
+    if (NOT IS_DIRECTORY "${path}")
+        message(FATAL_ERROR "Path ${path} is not a directory")
+    endif()
+endfunction()
+
+function(sources_patterns outvar dir)
+    set(patterns)
+    foreach(ext IN LISTS SOURCES_EXTENSIONS)
+        list(APPEND patterns "${dir}/*.${ext}")
+    endforeach()
+    set(${outvar} "${patterns}" PARENT_SCOPE)
+endfunction()
+
+function(tests_patterns outvar dir)
+    set(patterns)
+    foreach(ext IN LISTS SOURCES_EXTENSIONS)
+        list(APPEND patterns "${dir}/*.${TEST_EXTRA_EXT}.${ext}")
+    endforeach()
+    set(${outvar} "${patterns}" PARENT_SCOPE)
+endfunction()
+
+function(main_sources outvar dir)
+    set(val)
+    foreach(main_source_name IN LISTS MAIN_SOURCE_NAMES_LIST)
+        file(GLOB_RECURSE main_files "${dir}/${main_source_name}")
+        list(LENGTH main_files n)
+        if (n GREATER 0)
+            list(APPEND val "${main_files}")
+        endif()
+    endforeach()
+    set(${outvar} "${val}" PARENT_SCOPE)
+endfunction()
 
 # create project
 project(
-    ${PROJECT_NAME}
+    "${PROJECT_NAME}"
     VERSION ${PROJECT_VERSION}
-    DESCRIPTION ${PROJECT_DESCRIPTION}
-    HOMEPAGE_URL ${PROJECT_HOMEPAGE_URL}
-    LANGUAGES ${LANGUAGE}
+    DESCRIPTION "${PROJECT_DESCRIPTION}"
+    HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}"
+    LANGUAGES ${PROJECT_LANGUAGES}
 )
+
+# explicit includes needed for nix
+foreach(lang IN LISTS PROJECT_LANGUAGES)
+    set(CMAKE_${lang}_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_${lang}_IMPLICIT_INCLUDE_DIRECTORIES})
+endforeach()
+
 # generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# explicit includes needed for nix
-set(CMAKE_${LANGUAGE}_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_${LANGUAGE}_IMPLICIT_INCLUDE_DIRECTORIES})
-
-# set names
-set(EXE_NAME ${PROJECT_NAME})
-set(LIB_NAME ${PROJECT_NAME}_lib)
-set(TEST_NAME ${PROJECT_NAME}_test)
-set(TEST_LIB_NAME ${TEST_NAME}_lib)
 
 # make dirs full-paths
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/${SRC_DIR})
-set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR})
-set(TEST_DIR ${CMAKE_SOURCE_DIR}/${TEST_DIR})
+set(SRC_SUBDIR ${SRC_DIR})
+set(INCLUDE_SUBDIR ${INCLUDE_DIR})
+abs_path(SRC_DIR ${SRC_DIR})
+abs_path(INCLUDE_DIR ${INCLUDE_DIR})
+check_exists(${SRC_DIR})
+check_isdir(${SRC_DIR})
 
-# set file extension
-if("${LANGUAGE}" STREQUAL "C")
-    set(_default_source_ext c)
-elseif("${LANGUAGE}" STREQUAL "CXX")
-    set(_default_source_ext cpp)
-else()
-    message(FATAL_ERROR "Unsupported language: ${LANGUAGE}")
-endif()
-
-if(NOT DEFINED SOURCE_EXT)
-    set(SOURCE_EXT "${_default_source_ext}")
-endif()
-
-# split sources into main executable and lib files
-set(MAIN_SOURCE ${SRC_DIR}/${MAIN_FILE})
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${SRC_DIR}/*.${SOURCE_EXT})
-list(REMOVE_ITEM SOURCES ${MAIN_SOURCE})
+# get source files
+set(EXE_NAME ${PROJECT_NAME})
+main_sources(MAIN_SOURCES ${SRC_DIR})
+sources_patterns(CXX_PATTERNS ${SRC_DIR})
+file(GLOB_RECURSE CXX_SOURCES CONFIGURE_DEPENDS ${CXX_PATTERNS})
+tests_patterns(TESTS_PATTERNS ${SRC_DIR})
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${TESTS_PATTERNS})
+list(REMOVE_ITEM CXX_SOURCES ${MAIN_SOURCES})
+list(REMOVE_ITEM CXX_SOURCES ${TEST_SOURCES})
 
 # create lib
-add_library(${LIB_NAME} STATIC ${SOURCES})
-include(${CMAKE_SOURCE_DIR}/cmake/libraries.cmake)
-target_include_directories(${LIB_NAME}
-    PUBLIC
-        ${INCLUDE_DIR}
-    PRIVATE
-        ${SRC_DIR}
-)
+set(LIB_NAME "${PROJECT_NAME}-lib")
+add_library("${LIB_NAME}" STATIC ${CXX_SOURCES})
+target_include_directories("${LIB_NAME}" PRIVATE "${SRC_DIR}")
+if (EXISTS "${INCLUDE_DIR}")
+    check_isdir(${INCLUDE_DIR})
+    target_include_directories("${LIB_NAME}" PUBLIC "${INCLUDE_DIR}")
+endif()
+include(cmake/libraries.cmake)
 
-# create main executable
-add_executable(${EXE_NAME} ${MAIN_SOURCE})
-target_link_libraries(${EXE_NAME} PRIVATE ${LIB_NAME})
+function(make_executable outexe outid outpath filepath)
+    get_filename_component(filename "${filepath}" NAME)
+    get_filename_component(exename "${filepath}" NAME_WLE)
+    get_filename_component(exedir "${filepath}" DIRECTORY)
+    if (NOT IS_DIRECTORY "${filepath}" AND "${filename}" IN_LIST MAIN_SOURCE_NAMES_LIST)
+        get_filename_component(exename "${exedir}" NAME)
+        get_filename_component(exedir "${exedir}" DIRECTORY)
+        if (${OVERRIDE_ROOT_MAIN} AND "${exename}" STREQUAL "${SRC_SUBDIR}" AND "${exedir}" STREQUAL "${CMAKE_SOURCE_DIR}")
+            set(exename "${PROJECT_NAME}")
+        endif()
+    endif()
+    src_path(exepath "${exedir}/${exename}")
+    string(REPLACE "/" "_" exeid "${exepath}")
+    
+    add_executable("${exeid}" "${filepath}")
+    get_arg(0 link_lib true "${ARGN}")
+    if (${link_lib})
+        target_link_libraries(${exeid} PRIVATE ${LIB_NAME})
+    endif()
+    # https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html#target-properties
+    src_path(bindir "${exedir}")
+    set(bindir "${CMAKE_BINARY_DIR}/out/${bindir}")
+    set_target_properties(${exeid} PROPERTIES 
+        RUNTIME_OUTPUT_DIRECTORY ${bindir}
+        OUTPUT_NAME ${exename}
+    )
+    set(${outexe} ${${exeid}} PARENT_SCOPE) 
+    set(${outid} ${exeid} PARENT_SCOPE) 
+    set(${outpath} ${exepath} PARENT_SCOPE) 
+endfunction()
+
+# create main executables
+foreach(main_source IN LISTS MAIN_SOURCES)
+    make_executable(mainexe mainid mainpath ${main_source})
+endforeach()
 
 # enable testing
 include(CTest)
 enable_testing()
 
-# create test library
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${TEST_DIR}/*.${SOURCE_EXT})
-file(GLOB_RECURSE TESTS CONFIGURE_DEPENDS ${TEST_DIR}/${TEST_EXECUTABLES})
-list(REMOVE_ITEM TEST_SOURCES ${TESTS})
-
-add_library(${TEST_LIB_NAME} STATIC ${TEST_SOURCES})
-target_include_directories(${TEST_LIB_NAME}
-    PRIVATE 
-        ${SRC_DIR}
-        ${TEST_DIR}
-)
-target_link_libraries(${TEST_LIB_NAME}
-    PRIVATE
-        ${LIB_NAME}
-)
-
 # create test executables
-foreach(test_file IN LISTS TESTS)
-    get_filename_component(test_name ${test_file} NAME_WE)
-    add_executable(${test_name} ${test_file})
-    target_include_directories(${test_name}
-        PRIVATE
-            ${TEST_DIR}
-            ${SRC_DIR}
-            ${INCLUDE_DIR}
-    )
-    target_link_libraries(${test_name}
-        PRIVATE
-            ${TEST_LIB_NAME}
-    )
-    add_test(NAME ${test_name} COMMAND ${test_name})
+foreach(test_file IN LISTS TEST_SOURCES)
+    make_executable(testexe testid testpath ${test_file})
+    remove_regex(testpath "\\.${TEST_EXTRA_EXT}$" "${testpath}")
+    add_test(NAME "${testpath}" COMMAND ${testid})
 endforeach()
 
 # generate .clangd file

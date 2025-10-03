@@ -16,6 +16,6 @@ _deps
 CMakeUserPresets.json
 
 ### custom
-build
+bin
 .cache
 .clangd

@@ -22,12 +22,15 @@
               nixd
               nil
               nixfmt
-              # c
+              # c/c++
               cmake
-              glibc
               clang
+              gcc
               clang-tools
               lldb
+              gdb
+              glibc
+              libcxx
             ];
           };
       }

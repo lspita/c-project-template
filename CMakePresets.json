@@ -2,21 +2,19 @@
     "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 21,
+        "minor": 24,
         "patch": 0
     },
     "configurePresets": [
         {
-            "name": "default",
+            "name": "base",
             "hidden": true,
-            "binaryDir": "build/bin/${presetName}",
-            "installDir": "build/install/${presetName}"
+            "binaryDir": "bin/${presetName}"
         },
         {
             "name": "clang",
-            "hidden": true,
             "inherits": [
-                "default"
+                "base"
             ],
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
@@ -25,9 +23,8 @@
         },
         {
             "name": "gcc",
-            "hidden": true,
             "inherits": [
-                "default"
+                "base"
             ],
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
@@ -35,94 +32,48 @@
             }
         },
         {
-            "name": "clang-debug",
+            "name": "msvc",
             "inherits": [
-                "clang"
+                "base"
             ],
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe"
             }
-        },
-        {
-            "name": "clang-release",
-            "inherits": [
-                "clang"
-            ],
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "gcc-debug",
-            "inherits": [
-                "gcc"
-            ],
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "gcc-release",
-            "inherits": [
-                "gcc"
-            ],
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "ci-workflow",
-            "inherits": [
-                "default"
-            ]
         }
     ],
     "buildPresets": [
         {
-            "name": "default",
+            "name": "base",
             "hidden": true,
             "verbose": true,
             "inheritConfigureEnvironment": true
         },
         {
-            "name": "clang-debug",
+            "name": "clang",
             "inherits": [
-                "default"
+                "base"
             ],
-            "configurePreset": "clang-debug"
+            "configurePreset": "clang"
         },
         {
-            "name": "clang-release",
+            "name": "gcc",
             "inherits": [
-                "default"
+                "base"
             ],
-            "configurePreset": "clang-release"
+            "configurePreset": "gcc"
         },
         {
-            "name": "gcc-debug",
+            "name": "msvc",
             "inherits": [
-                "default"
+                "base"
             ],
-            "configurePreset": "gcc-debug"
-        },
-        {
-            "name": "gcc-release",
-            "inherits": [
-                "default"
-            ],
-            "configurePreset": "gcc-release"
-        },
-        {
-            "name": "ci-workflow",
-            "inherits": [
-                "default"
-            ],
-            "configurePreset": "ci-workflow"
+            "configurePreset": "msvc"
         }
     ],
     "testPresets": [
         {
-            "name": "default",
+            "name": "base",
             "hidden": true,
             "inheritConfigureEnvironment": true,
             "output": {
@@ -130,39 +81,25 @@
             }
         },
         {
-            "name": "clang-debug",
+            "name": "clang",
             "inherits": [
-                "default"
+                "base"
             ],
-            "configurePreset": "clang-debug"
+            "configurePreset": "clang"
         },
         {
-            "name": "clang-release",
+            "name": "gcc",
             "inherits": [
-                "default"
+                "base"
             ],
-            "configurePreset": "clang-release"
+            "configurePreset": "gcc"
         },
         {
-            "name": "gcc-debug",
+            "name": "msvc",
             "inherits": [
-                "default"
+                "base"
             ],
-            "configurePreset": "gcc-debug"
-        },
-        {
-            "name": "gcc-release",
-            "inherits": [
-                "default"
-            ],
-            "configurePreset": "gcc-release"
-        },
-        {
-            "name": "ci-workflow",
-            "inherits": [
-                "default"
-            ],
-            "configurePreset": "ci-workflow"
+            "configurePreset": "msvc"
         }
     ]
 }
