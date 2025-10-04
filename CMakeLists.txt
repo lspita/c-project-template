@@ -130,7 +130,7 @@ if (EXISTS "${INCLUDE_DIR}")
     check_isdir(${INCLUDE_DIR})
     target_include_directories("${LIB_NAME}" PUBLIC "${INCLUDE_DIR}")
 endif()
-include(cmake/libraries.cmake)
+include(cmake/libraries.cmake OPTIONAL)
 
 function(make_executable outexe outid outpath filepath)
     get_filename_component(filename "${filepath}" NAME)
