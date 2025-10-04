@@ -1,5 +1,6 @@
 # direnv
 .direnv/
+.envrc*
 
 ### https://github.com/github/gitignore/blob/main/CMake.gitignore
 CMakeLists.txt.user
