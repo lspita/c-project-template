@@ -13,7 +13,7 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-include(cmake/variables.cmake)
+include(cmake/setup.cmake)
 
 set(TEST_EXTRA_EXT "test")
 
