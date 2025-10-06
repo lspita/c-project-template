@@ -5,6 +5,7 @@
             "name": "CMake LLDB Debug",
             "type": "lldb-dap",
             "request": "launch",
+            "preLaunchTask": "build",
             "cwd": "${workspaceFolder}",
             "program": "${command:cmake.launchTargetPath}",
             "args": [],
@@ -14,6 +15,7 @@
             "name": "CTest LLDB Debug",
             "type": "lldb-dap",
             "request": "launch",
+            "preLaunchTask": "build",
             "cwd": "${cmake.testWorkingDirectory}",
             "program": "${cmake.testProgram}",
             "args": [
