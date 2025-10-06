@@ -196,7 +196,7 @@ endforeach()
 # generate .clangd file
 set(CLANGD_CONFIG_CONTENT 
 "CompileFlags:
-CompilationDatabase: ${CMAKE_BINARY_DIR}
+    CompilationDatabase: ${CMAKE_BINARY_DIR}
 ")
 file(WRITE ${CMAKE_SOURCE_DIR}/.clangd ${CLANGD_CONFIG_CONTENT})
 
