@@ -6,7 +6,6 @@ function(set_default var val)
     endif()
 endfunction()
 
-
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PROJECT_LANGUAGES "C" "CXX")
@@ -148,39 +147,39 @@ endif()
 include("${CMAKE_DIR}/libraries.cmake" OPTIONAL)
 
 function(make_executable outexe outid outpath filepath)
-get_filename_component(filename "${filepath}" NAME)
-get_filename_component(exename "${filepath}" NAME_WLE)
-get_filename_component(exedir "${filepath}" DIRECTORY)
-if (NOT IS_DIRECTORY "${filepath}" AND "${filename}" IN_LIST MAIN_SOURCE_NAMES_LIST)
-    get_filename_component(exename "${exedir}" NAME)
-    get_filename_component(exedir "${exedir}" DIRECTORY)
-    if ("${exename}" STREQUAL "${SRC_DIR}" AND "${exedir}" STREQUAL "${CMAKE_SOURCE_DIR}")
-        set(exename "${ROOT_TARGET_NAME}")
+    get_filename_component(filename "${filepath}" NAME)
+    get_filename_component(exename "${filepath}" NAME_WLE)
+    get_filename_component(exedir "${filepath}" DIRECTORY)
+    if (NOT IS_DIRECTORY "${filepath}" AND "${filename}" IN_LIST MAIN_SOURCE_NAMES_LIST)
+        get_filename_component(exename "${exedir}" NAME)
+        get_filename_component(exedir "${exedir}" DIRECTORY)
+        if ("${exename}" STREQUAL "${SRC_DIR}" AND "${exedir}" STREQUAL "${CMAKE_SOURCE_DIR}")
+            set(exename "${ROOT_TARGET_NAME}")
+        endif()
     endif()
-endif()
-src_path(exepath "${exedir}/${exename}")
-string(REPLACE "/" "_" exeid "${exepath}")
+    src_path(exepath "${exedir}/${exename}")
+    string(REPLACE "/" "_" exeid "${exepath}")
 
-add_executable("${exeid}" "${filepath}")
-get_arg(0 link_lib true "${ARGN}")
-if (${link_lib})
-target_link_libraries(${exeid} PRIVATE ${PROJECT_LIB})
-endif()
-# https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html#target-properties
-src_path(bindir "${exedir}")
-set(bindir "${CMAKE_BINARY_DIR}/out/${bindir}")
-set_target_properties(${exeid} PROPERTIES 
-    RUNTIME_OUTPUT_DIRECTORY ${bindir}
-    OUTPUT_NAME ${exename}
-)
-set(${outexe} ${${exeid}} PARENT_SCOPE) 
-set(${outid} ${exeid} PARENT_SCOPE)
-set(${outpath} ${exepath} PARENT_SCOPE) 
+    add_executable("${exeid}" "${filepath}")
+    get_arg(0 link_lib true "${ARGN}")
+    if (${link_lib})
+        target_link_libraries(${exeid} PRIVATE ${PROJECT_LIB})
+    endif()
+    # https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html#target-properties
+    src_path(bindir "${exedir}")
+    set(bindir "${CMAKE_BINARY_DIR}/out/${bindir}")
+    set_target_properties(${exeid} PROPERTIES 
+        RUNTIME_OUTPUT_DIRECTORY ${bindir}
+        OUTPUT_NAME ${exename}
+    )
+    set(${outexe} ${${exeid}} PARENT_SCOPE) 
+    set(${outid} ${exeid} PARENT_SCOPE)
+    set(${outpath} ${exepath} PARENT_SCOPE) 
 endfunction()
 
 # create main executables
 foreach(main_source IN LISTS MAIN_SOURCES)
-make_executable(mainexe mainid mainpath ${main_source})
+    make_executable(mainexe mainid mainpath ${main_source})
 endforeach()
 
 # enable testing
@@ -189,9 +188,9 @@ enable_testing()
 
 # create test executables
 foreach(test_file IN LISTS TEST_SOURCES)
-make_executable(testexe testid testpath ${test_file})
-remove_regex(testpath "\\.${TEST_EXTRA_EXT}$" "${testpath}")
-add_test(NAME "${testpath}" COMMAND ${testid})
+    make_executable(testexe testid testpath ${test_file})
+    remove_regex(testpath "\\.${TEST_EXTRA_EXT}$" "${testpath}")
+    add_test(NAME "${testpath}" COMMAND ${testid})
 endforeach()
 
 # generate .clangd file
@@ -201,4 +200,4 @@ CompilationDatabase: ${CMAKE_BINARY_DIR}
 ")
 file(WRITE ${CMAKE_SOURCE_DIR}/.clangd ${CLANGD_CONFIG_CONTENT})
 
-include("${CMAKE_DIR}/libraries.cmake" OPTIONAL)
+include("${CMAKE_DIR}/overrides.cmake" OPTIONAL)
