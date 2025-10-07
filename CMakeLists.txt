@@ -150,7 +150,6 @@ if (EXISTS "${LIB_DIR_ABS}")
     message(STATUS ${LIB_CXX_SOURCES})
     target_sources("${PROJECT_LIB}" PRIVATE ${LIB_CXX_SOURCES})
 endif()
-include("${CMAKE_DIR}/libraries.cmake" OPTIONAL)
 
 function(make_executable outexe outid outpath filepath)
     get_filename_component(filename "${filepath}" NAME)
@@ -206,4 +205,4 @@ set(CLANGD_CONFIG_CONTENT
 ")
 file(WRITE ${CMAKE_SOURCE_DIR}/.clangd ${CLANGD_CONFIG_CONTENT})
 
-include("${CMAKE_DIR}/overrides.cmake" OPTIONAL)
+include("${CMAKE_DIR}/config.cmake" OPTIONAL)
