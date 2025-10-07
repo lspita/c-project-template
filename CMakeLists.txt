@@ -17,8 +17,6 @@ set(CMAKE_TEMPLATES_DIR templates)
 set(TARGETS_DIR targets)
 set(TEST_EXTRA_EXT test)
 set(CLANG_TIDY clang-tidy)
-set(CLANGD_CONFIG_PATH .clangd)
-set(MAKEFILE_PATH Makefile)
 set_default(CMAKE_BUILD_TYPE Debug)
 
 include("${CMAKE_DIR}/setup.cmake")
@@ -57,6 +55,13 @@ endfunction()
 function(src_path outvar path)
     remove_regex(res "^${CMAKE_SOURCE_DIR}\\/?" "${path}")
     remove_regex(res "^${SRC_DIR}\\/?" "${res}")
+    set(${outvar} "${res}" PARENT_SCOPE)
+endfunction()
+
+function(cmake_template_path outvar path)
+    remove_regex(res "^${CMAKE_SOURCE_DIR}\\/?" "${path}")
+    remove_regex(res "^${CMAKE_DIR}\\/?" "${res}")
+    remove_regex(res "^${CMAKE_TEMPLATES_DIR}\\/?" "${res}")
     set(${outvar} "${res}" PARENT_SCOPE)
 endfunction()
 
@@ -197,13 +202,14 @@ foreach(test_file IN LISTS TEST_SOURCES)
     add_test(NAME "${testpath}" COMMAND ${testid})
 endforeach()
 
-set(CMAKE_TEMPLATES_PATH "${CMAKE_DIR}/${CMAKE_TEMPLATES_DIR}")
-# generate .clangd
-abs_path(CLANGD_ABS_PATH "${CLANGD_CONFIG_PATH}")
-configure_file("${CMAKE_TEMPLATES_PATH}/.clangd" ${CLANGD_ABS_PATH} @ONLY)
-# generate makefile
-abs_path(MAKEFILE_ABS_PATH "${MAKEFILE_PATH}")
-configure_file("${CMAKE_TEMPLATES_PATH}/Makefile" ${MAKEFILE_ABS_PATH} @ONLY)
-
-
 include("${CMAKE_DIR}/config.cmake" OPTIONAL)
+
+# generate files from templates
+set(CMAKE_TEMPLATES_PATH "${CMAKE_DIR}/${CMAKE_TEMPLATES_DIR}")
+file(GLOB_RECURSE TEMPLATE_FILES CONFIGURE_DEPENDS ${CMAKE_TEMPLATES_PATH}/*)
+foreach(template_file IN LISTS TEMPLATE_FILES)
+    cmake_template_path(template_name ${template_file})
+    abs_path(template_name_abs "${template_name}")
+    configure_file(${template_file} ${template_name_abs} @ONLY)
+endforeach()
+

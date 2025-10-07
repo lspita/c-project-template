@@ -14,8 +14,6 @@ Variables:
 - CMAKE_TEMPLATES_DIR (string, default=cmake) CMAKE_DIR subdirectory containing template files
 - TEST_EXTRA_EXT (string, default=test) extra file extension for tests (es. test -> mytest.test.c)
 - CLANG_TIDY (string, default=clang-tidy) clang tidy executable, unset to stop using clang tidy
-- CLANGD_CONFIG_PATH (string, default=.clangd) generated clagd config file path
-- MAKEFILE_PATH (string, default=Makefile) generated makefile config file path
 ]]#
 
 set(PROJECT_NAME cxx-project-template)

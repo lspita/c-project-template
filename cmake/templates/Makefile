@@ -1,5 +1,4 @@
 BIN_DIR := @CMAKE_BINARY_DIR@
-CLANGD := @CLANGD_ABS_PATH@
 PRESET := @CMAKE_PRESET@
 TARGETS_DIR := @TARGETS_DIR_ABS@
 CMAKE := cmake
@@ -20,8 +19,8 @@ build: $(BIN_DIR)
 	$(CMAKE) --build $(PRESET_FLAG) -- $(CMAKE_SILENT_FLAG)
 
 clean:
-	$(CMAKE) -E rm -rf $(BIN_DIR)
-	$(CMAKE) -E rm -f $(CLANGD)
+	-$(CMAKE) -E rm -rf $(BIN_DIR)/*
+	-$(CMAKE) -E rm -rf $(BIN_DIR)/.*
 
 test: build
 	$(CTEST) $(PRESET_FLAG) $(RUN_ARGS)

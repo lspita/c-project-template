@@ -18,3 +18,4 @@ After running the cmake configuration with the chosen preset, a Makefile is gene
 Inside the [cmake](./cmake/) dir you can find the config files you need
 - [setup.cmake](./cmake/setup.cmake): Included at the top of the cmake file. Used to define/override variables.
 - [config.cmake](./cmake/config.cmake): Included at the end of the cmake file. Used to add extra configuration.
+- [templates](./templates): Config files to configure with cmake and put in the project root. The path relative to the templates directory is the same relative to the project root.
