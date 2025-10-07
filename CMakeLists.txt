@@ -6,26 +6,27 @@ function(set_default var val)
     endif()
 endfunction()
 
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(PROJECT_LANGUAGES "C" "CXX")
-set(SOURCES_EXTENSIONS "c" "cpp" "cc" "cxx")
-set(MAIN_SOURCE_NAME main)
+set(PROJECT_LANGUAGES C CXX)
+set(SOURCES_EXTENSIONS c cpp cc cxx)
+set(EXEC_SOURCE_NAME main)
 set(SRC_DIR src)
 set(INCLUDE_DIR include)
 set(LIB_DIR lib)
 set(CMAKE_DIR cmake)
-set(TEST_EXTRA_EXT "test")
-set_default(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_TEMPLATES_DIR templates)
+set(TARGETS_DIR targets)
+set(TEST_EXTRA_EXT test)
 set(CLANG_TIDY clang-tidy)
+set(CLANGD_CONFIG_PATH .clangd)
+set(MAKEFILE_PATH Makefile)
+set_default(CMAKE_BUILD_TYPE Debug)
 
 include("${CMAKE_DIR}/setup.cmake")
 
 set_default(ROOT_TARGET_NAME "${PROJECT_NAME}")
-find_program(CLANG_TIDY_EXE NAMES ${CLANG_TIDY})
-if(CLANG_TIDY_EXE)
-    set(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE})
-    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+if(CLANG_TIDY)
+    set(CMAKE_C_CLANG_TIDY ${CLANG_TIDY})
+    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY})
 endif()
 
 function(get_arg index outvar default _argn)
@@ -39,9 +40,9 @@ function(get_arg index outvar default _argn)
     set(${outvar} "${val}" PARENT_SCOPE)
 endfunction()
 
-set(MAIN_SOURCE_NAMES_LIST)
+set(EXEC_SOURCE_NAMES_LIST)
 foreach(ext IN LISTS SOURCES_EXTENSIONS)
-    list(APPEND MAIN_SOURCE_NAMES_LIST "${MAIN_SOURCE_NAME}.${ext}")
+    list(APPEND EXEC_SOURCE_NAMES_LIST "${EXEC_SOURCE_NAME}.${ext}")
 endforeach()
 
 function(abs_path outvar path)
@@ -71,6 +72,12 @@ function(check_isdir path)
     endif()
 endfunction()
 
+function(check_isnotdir path)
+    if (IS_DIRECTORY "${path}")
+        message(FATAL_ERROR "Path ${path} is not a directory")
+    endif()
+endfunction()
+
 function(sources_patterns outvar dir)
     set(patterns)
     foreach(ext IN LISTS SOURCES_EXTENSIONS)
@@ -89,7 +96,7 @@ endfunction()
 
 function(main_sources outvar dir)
     set(val)
-    foreach(main_source_name IN LISTS MAIN_SOURCE_NAMES_LIST)
+    foreach(main_source_name IN LISTS EXEC_SOURCE_NAMES_LIST)
         file(GLOB_RECURSE main_files "${dir}/${main_source_name}")
         list(LENGTH main_files n)
         if (n GREATER 0)
@@ -100,13 +107,7 @@ function(main_sources outvar dir)
 endfunction()
 
 # create project
-project(
-    "${PROJECT_NAME}"
-    VERSION ${PROJECT_VERSION}
-    DESCRIPTION "${PROJECT_DESCRIPTION}"
-    HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}"
-    LANGUAGES ${PROJECT_LANGUAGES}
-)
+project("${PROJECT_NAME}" LANGUAGES ${PROJECT_LANGUAGES})
 
 # explicit includes needed for nix
 foreach(lang IN LISTS PROJECT_LANGUAGES)
@@ -120,11 +121,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 abs_path(SRC_DIR_ABS ${SRC_DIR})
 abs_path(INCLUDE_DIR_ABS ${INCLUDE_DIR})
 abs_path(LIB_DIR_ABS ${LIB_DIR})
+set(TARGETS_DIR_ABS "${CMAKE_BINARY_DIR}/${TARGETS_DIR}")
 check_exists(${SRC_DIR_ABS})
 check_isdir(${SRC_DIR_ABS})
 
 # get source files
-set(EXE_NAME ${PROJECT_NAME})
 main_sources(MAIN_SOURCES ${SRC_DIR_ABS})
 sources_patterns(CXX_PATTERNS ${SRC_DIR_ABS})
 file(GLOB_RECURSE CXX_SOURCES CONFIGURE_DEPENDS ${CXX_PATTERNS})
@@ -155,12 +156,10 @@ function(make_executable outexe outid outpath filepath)
     get_filename_component(filename "${filepath}" NAME)
     get_filename_component(exename "${filepath}" NAME_WLE)
     get_filename_component(exedir "${filepath}" DIRECTORY)
-    if (NOT IS_DIRECTORY "${filepath}" AND "${filename}" IN_LIST MAIN_SOURCE_NAMES_LIST)
+    set(is_root_exe "${exename}" STREQUAL "${SRC_DIR}" AND "${exedir}" STREQUAL "${CMAKE_SOURCE_DIR}")
+    if (NOT ${is_root_exe} AND NOT IS_DIRECTORY "${filepath}" AND "${filename}" IN_LIST EXEC_SOURCE_NAMES_LIST)
         get_filename_component(exename "${exedir}" NAME)
         get_filename_component(exedir "${exedir}" DIRECTORY)
-        if ("${exename}" STREQUAL "${SRC_DIR}" AND "${exedir}" STREQUAL "${CMAKE_SOURCE_DIR}")
-            set(exename "${ROOT_TARGET_NAME}")
-        endif()
     endif()
     src_path(exepath "${exedir}/${exename}")
     string(REPLACE "/" "_" exeid "${exepath}")
@@ -172,7 +171,7 @@ function(make_executable outexe outid outpath filepath)
     endif()
     # https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html#target-properties
     src_path(bindir "${exedir}")
-    set(bindir "${CMAKE_BINARY_DIR}/out/${bindir}")
+    set(bindir "${TARGETS_DIR_ABS}/${bindir}")
     set_target_properties(${exeid} PROPERTIES 
         RUNTIME_OUTPUT_DIRECTORY ${bindir}
         OUTPUT_NAME ${exename}
@@ -198,11 +197,13 @@ foreach(test_file IN LISTS TEST_SOURCES)
     add_test(NAME "${testpath}" COMMAND ${testid})
 endforeach()
 
-# generate .clangd file
-set(CLANGD_CONFIG_CONTENT 
-"CompileFlags:
-    CompilationDatabase: ${CMAKE_BINARY_DIR}
-")
-file(WRITE ${CMAKE_SOURCE_DIR}/.clangd ${CLANGD_CONFIG_CONTENT})
+set(CMAKE_TEMPLATES_PATH "${CMAKE_DIR}/${CMAKE_TEMPLATES_DIR}")
+# generate .clangd
+abs_path(CLANGD_ABS_PATH "${CLANGD_CONFIG_PATH}")
+configure_file("${CMAKE_TEMPLATES_PATH}/.clangd" ${CLANGD_ABS_PATH} @ONLY)
+# generate makefile
+abs_path(MAKEFILE_ABS_PATH "${MAKEFILE_PATH}")
+configure_file("${CMAKE_TEMPLATES_PATH}/Makefile" ${MAKEFILE_ABS_PATH} @ONLY)
+
 
 include("${CMAKE_DIR}/config.cmake" OPTIONAL)

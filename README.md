@@ -1,12 +1,20 @@
-# C project template
+# C/C++ project template
 
-This is a template C project managed with CMake.
+This is a template C/C++ project managed with CMake.
 
 ## Usage
-Edit the [config.cmake](./config.cmake) file to adapt the template to your project
-- [`src`](./src/): main sources directory. Contains C sources and private header files. Has access to `include` directory.
-- [`include`](./include/): public headers directory. Contains the public header files of the project. Use a `<project-name>` directory inside instead of storing the header files directly inside.
-- [`test`](./test/) tests directory. All `.test.c` sources are treated as test executables, while normal C sources are aviable to use. Has access to `include` and `src` directories.
+CMake presets for every major compiler are available
+- clang
+- gcc
+- msvc (cl)
 
-> [!IMPORTANT]
-> The template was tested using clang, but should be customizable using CMake presets.
+After running the cmake configuration with the chosen preset, a Makefile is generated with the following targets:
+- `run <exec> <args>` (default target): Build and run the specified executable, or the source root main executable if not specified.
+- `test <args>`: Build and run all tests.
+- `clean`: Delete generated cmake files (except the Makefile itself)
+- `build`: Build the project.
+
+## Configuration
+Inside the [cmake](./cmake/) dir you can find the config files you need
+- [setup.cmake](./cmake/setup.cmake): Included at the top of the cmake file. Used to define/override variables.
+- [config.cmake](./cmake/config.cmake): Included at the end of the cmake file. Used to add extra configuration.
