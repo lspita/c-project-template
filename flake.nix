@@ -23,6 +23,7 @@
               nil
               nixfmt
               # c/c++
+              make
               cmake
               clang
               gcc
