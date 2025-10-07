@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24.0)
 
 function(set_default var val)
-    if(NOT DEFINED ${var})
+    if(NOT ${var})
         set(${var} ${val} PARENT_SCOPE)
     endif()
 endfunction()
@@ -17,10 +17,16 @@ set(LIB_DIR lib)
 set(CMAKE_DIR cmake)
 set(TEST_EXTRA_EXT "test")
 set_default(CMAKE_BUILD_TYPE Debug)
+set(CLANG_TIDY clang-tidy)
 
 include("${CMAKE_DIR}/setup.cmake")
 
 set_default(ROOT_TARGET_NAME "${PROJECT_NAME}")
+find_program(CLANG_TIDY_EXE NAMES ${CLANG_TIDY})
+if(CLANG_TIDY_EXE)
+    set(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE})
+    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+endif()
 
 function(get_arg index outvar default _argn)
     set(opts ${_argn})
