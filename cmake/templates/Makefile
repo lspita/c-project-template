@@ -22,6 +22,9 @@ clean:
 	-$(CMAKE) -E rm -rf $(BIN_DIR)/*
 	-$(CMAKE) -E rm -rf $(BIN_DIR)/.*
 
+reset: clean
+	$(CMAKE) $(PRESET_FLAG)
+
 test: build
 	$(CTEST) $(PRESET_FLAG) $(RUN_ARGS)
 
