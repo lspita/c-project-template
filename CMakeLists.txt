@@ -20,11 +20,11 @@ set_default(CMAKE_BUILD_TYPE Debug)
 
 include("${CMAKE_DIR}/setup.cmake")
 
-set_default(ROOT_TARGET_NAME "${PROJECT_NAME}")
-if(CLANG_TIDY)
-    set(CMAKE_C_CLANG_TIDY ${CLANG_TIDY})
-    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY})
-endif()
+# set_default(ROOT_TARGET_NAME "${PROJECT_NAME}")
+# if(CLANG_TIDY)
+#     set(CMAKE_C_CLANG_TIDY ${CLANG_TIDY})
+#     set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY})
+# endif()
 
 function(get_arg index outvar default _argn)
     set(opts ${_argn})
