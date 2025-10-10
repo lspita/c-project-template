@@ -20,8 +20,6 @@ set_default(CMAKE_BUILD_TYPE Debug)
 
 include("${CMAKE_DIR}/setup.cmake")
 
-
-
 function(get_arg index outvar default _argn)
     set(opts ${_argn})
     list(LENGTH opts n)
