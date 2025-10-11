@@ -26,11 +26,11 @@
               stdenv
               gnumake
               cmake
-              clang
               gcc
-              clang-tools
-              lldb
               gdb
+              clang-tools # must be before clang to have the correct clangd in PATH
+              clang
+              lldb
             ];
           };
       }
