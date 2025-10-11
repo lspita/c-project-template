@@ -23,6 +23,7 @@
               nil
               nixfmt
               # c/c++
+              stdenv
               gnumake
               cmake
               clang
@@ -30,8 +31,6 @@
               clang-tools
               lldb
               gdb
-              glibc
-              libcxx
             ];
           };
       }
