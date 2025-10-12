@@ -20,7 +20,7 @@
             "program": "${cmake.testProgram}",
             "args": [
                 "${cmake.testArgs}"
-            ],
+            ]
         }
     ]
 }
