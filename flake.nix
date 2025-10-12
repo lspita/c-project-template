@@ -23,7 +23,6 @@
               nil
               nixfmt
               # c/c++
-              stdenv
               gnumake
               cmake
               gcc
