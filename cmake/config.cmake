@@ -20,12 +20,6 @@ Targets are located under bin/<preset>/out
 - test targets are named <file basename>.<TEST_EXTRA_EXT>
 ]]#
 
-if (MSVC)
-    add_compile_options(/W4)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
 if (NOT MSVC)
     target_link_libraries(${PROJECT_LIB} PUBLIC m) # add math library
 endif()
