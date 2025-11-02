@@ -8,18 +8,23 @@ Functions
 - check_isnotdir(path) error if path is a directory
 
 Variables:
-- PROJECT_LIB (library) library with all source files (except tests and executables)
-- SRC_DIR_ABS (string) abs path of ${SRC_DIR}
-- INCLUDE_DIR_ABS (string) abs path of ${INCLUDE_DIR}
-- LIB_DIR_ABS (string) abs path of ${LIB_DIR}
+- PROJECT_LIB (library) library with all source files
+- SRC_SOURCES (list) list of all sources in SRC_DIR
+- EXEC_SOURCES (list) list of all sources that are executables
+- TEST_SOURCES (list) list of all sources that are tests
+- SRC_DIR_ABS (string) abs path of SRC_DIR
+- INCLUDE_DIR_ABS (string) abs path of INCLUDE_DIR
+- LIB_DIR_ABS (string) abs path of LIB_DIR
 
 Every test is named after the relative path from SRC_DIR.
 Targets are located under bin/<preset>/out
 - main targets are named after the directory name
-- the root main target is named <file basename>
-- test targets are named <file basename>.<TEST_EXTRA_EXT>
+- the root main target and the tests are named as the file without the last file extension
 ]]#
 
-if (NOT MSVC)
+if (MSVC)
+    target_compile_options(${PROJECT_LIB} PRIVATE /W4)
+else()
+    target_compile_options(${PROJECT_LIB} PRIVATE -Wall -Wextra -Wpedantic)
     target_link_libraries(${PROJECT_LIB} PUBLIC m) # add math library
 endif()
