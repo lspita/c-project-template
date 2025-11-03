@@ -1,10 +1,12 @@
+.env
+
 # direnv
 /.direnv/
 /.envrc*
 
 # cmake
 /bin/
-/.clangd
-/.clang-tidy
 /.clang-format
+/.clang-tidy
+/.clangd
 /Makefile
